@@ -7,8 +7,8 @@ import {
   Pressable,
   StyleSheet,
 } from 'react-native';
-import {calWidth} from '../../calDimens';
-import {colors, fonts} from '../../constants';
+import {calWidth} from '../../utils/calDimens';
+import {colors, fonts} from '../../utils/constants';
 
 interface Props {
   textLabel: string;
@@ -16,8 +16,8 @@ interface Props {
   placeholder: string;
   secureTextEntry: boolean;
   passVisible: boolean;
-  onPress: () => void;
-  // onChangeText: (text: string) => string;
+  onPress: Function;
+  onChangeText: Function;
 }
 
 const InputPassComponent: FC<Props> = props => {
@@ -30,7 +30,7 @@ const InputPassComponent: FC<Props> = props => {
         <Image style={styles.inputIcon} source={imgSource} />
         <View>
           <TextInput
-            // onChangeText={text => props.onChangeText(text)}
+            onChangeText={text => props.onChangeText(text)}
             style={styles.inputInnerContainer}
             secureTextEntry={secureTextEntry}
             placeholder={placeholder}

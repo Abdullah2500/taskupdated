@@ -1,13 +1,13 @@
 import React, {FC} from 'react';
 import {View, Text, TextInput, Image, StyleSheet} from 'react-native';
-import {calWidth} from '../../calDimens';
-import {colors, fonts} from '../../constants';
+import {calWidth} from '../../utils/calDimens';
+import {colors, fonts} from '../../utils/constants';
 
 interface Props {
   textLabel: string;
   imgSource: any;
   placeholder: string;
-  // onChangeText: (text: string) => string;
+  onChangeText: Function;
 }
 
 const InputComponent: FC<Props> = props => {
@@ -19,7 +19,7 @@ const InputComponent: FC<Props> = props => {
         <Image style={styles.inputIcon} source={imgSource} />
         <View>
           <TextInput
-            // onChangeText={text => props.onChangeText(text)}
+            onChangeText={text => props.onChangeText(text)}
             style={styles.inputInnerContainer}
             placeholder={placeholder}
           />

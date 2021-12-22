@@ -1,8 +1,8 @@
 import React, {FC} from 'react';
 import {View, Text, Image, StyleSheet} from 'react-native';
-import {calHeight, calWidth} from '../calDimens';
+import {calHeight, calWidth} from '../utils/calDimens';
 import Button from '../components/Button';
-import {colors, fonts} from '../constants';
+import {colors, fonts} from '../utils/constants';
 
 interface Props {
   navigation: any;

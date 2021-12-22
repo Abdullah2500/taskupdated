@@ -6,57 +6,56 @@ import {
   Keyboard,
   StyleSheet,
   TouchableWithoutFeedback,
+  Alert,
 } from 'react-native';
 import {KeyboardAwareScrollView} from 'react-native-keyboard-aware-scroll-view';
-import {calHeight, calWidth} from '../calDimens';
+import {calHeight, calWidth} from '../utils/calDimens';
 import Header from '../components/Header';
 import ModalComponent from '../components/Modal';
-import {colors, fonts} from '../constants';
+import {colors, fonts} from '../utils/constants';
 import Button from '../components/Button';
 import InputComponent from '../components/formComponents/Input';
 import InputPassComponent from '../components/formComponents/InputPass';
-// import {registerApi} from '../services/services';
-// import {useDispatch, useSelector} from 'react-redux';
-// import {
-//   closeLoading,
-//   setUserDetails,
-//   startLoading,
-// } from '../redux/actions/actions';
+import {registerApi} from '../services/services';
+import {useDispatch, useSelector} from 'react-redux';
+import {
+  closeLoading,
+  setUserDetails,
+  startLoading,
+} from '../redux/actions/actions';
+import {RootState} from '../redux/reducers/indexReducer';
 
 interface Props {
-  passVisible: boolean;
-  username: string;
-  email: string;
-  password: string;
-  address: string;
-  phone: number;
   navigation: any;
 }
 
 const Register: FC<Props> = props => {
-  const [passVisible, setPassVisibile] = useState(true);
-  const [username, setUsername] = useState('');
-  const [email, setEmail] = useState('');
-  const [password, setPassword] = useState('');
-  const [address, setAddress] = useState('');
-  const [phone, setPhone] = useState();
+  const [passVisible, setPassVisibile] = useState<boolean>(true);
+  const [username, setUsername] = useState<string>('');
+  const [email, setEmail] = useState<string>('');
+  const [password, setPassword] = useState<string>('');
+  const [address, setAddress] = useState<string>('');
+  const [phone, setPhone] = useState<number>();
 
-  // const dispatch = useDispatch();
-  // const visible = useSelector(state => state.loadingReducer);
+  const dispatch = useDispatch();
+  const visible = useSelector((state: RootState) => state.loadingReducer);
 
   const validate_field = () => {
     if (!username || !email || !password || !address || !phone) {
-      alert('Fields should not be empty');
+      Alert.alert('OOPS!', 'Fields should not be empty');
       return false;
     } else if (password.length < 6) {
-      alert('Password should be at least 6 characters long');
+      Alert.alert(
+        'Password Too short!',
+        'Password should be at least 6 characters long',
+      );
       return false;
     } else {
       const reg = /^\w+([\.-]?\w+)*@\w+([\.-]?\w+)*(\.\w{2,3})+$/;
       if (reg.test(email) === true) {
         return true;
       } else {
-        alert('Email is not valid');
+        Alert.alert('OOPS!', 'Email is not valid');
         return false;
       }
     }
@@ -65,37 +64,37 @@ const Register: FC<Props> = props => {
   const registerBtnPressed = async () => {
     try {
       if (validate_field()) {
-        // dispatch(startLoading());
-        // const res = await registerApi({
-        //   username: username,
-        //   email: email,
-        //   password: password,
-        //   address: address,
-        //   phone_number: phone,
-        // });
-        // dispatch(setUserDetails(res.data));
-        // if (res.code === 200) {
-        //   alert('User successfully registerd.');
-        props.navigation.push('Login');
-        // } else {
-        //   alert(res.message);
-        //   dispatch(closeLoading());
-        // }
+        dispatch(startLoading());
+        const res = await registerApi({
+          username: username,
+          email: email,
+          password: password,
+          address: address,
+          phone_number: phone,
+        });
+        dispatch(setUserDetails(res.data));
+        if (res.code === 200) {
+          Alert.alert('Success', 'User successfully registerd.');
+          props.navigation.push('Login');
+        } else {
+          Alert.alert('Error', res.message);
+          dispatch(closeLoading());
+        }
       }
     } catch (error) {
       console.log(error);
     }
   };
 
-  // const stopInitialLoading = () => {
-  //   if (visible) {
-  //     dispatch(closeLoading());
-  //   }
-  // };
+  const stopInitialLoading = () => {
+    if (visible) {
+      dispatch(closeLoading());
+    }
+  };
 
-  // useEffect(() => {
-  //   stopInitialLoading();
-  // }, []);
+  useEffect(() => {
+    stopInitialLoading();
+  }, []);
 
   return (
     <KeyboardAwareScrollView
@@ -115,19 +114,19 @@ const Register: FC<Props> = props => {
             <InputComponent
               textLabel="Full Name"
               imgSource={require('../assets/img/username.png')}
-              // onChangeText={text => setUsername(text)}
+              onChangeText={(text: string) => setUsername(text)}
               placeholder="Enter your full name"
             />
             <InputComponent
               textLabel="E-Mail"
               imgSource={require('../assets/img/mail.png')}
-              // onChangeText={text => setEmail(text)}
+              onChangeText={(text: string) => setEmail(text)}
               placeholder="Enter your e-mail here"
             />
             <InputPassComponent
               textLabel="Password"
               imgSource={require('../assets/img/password.png')}
-              // onChangeText={text => setPassword(text)}
+              onChangeText={(text: string) => setPassword(text)}
               placeholder="Enter your password here"
               secureTextEntry={passVisible}
               onPress={() => setPassVisibile(!passVisible)}
@@ -136,13 +135,13 @@ const Register: FC<Props> = props => {
             <InputComponent
               textLabel="Current Address"
               imgSource={require('../assets/img/address.png')}
-              // onChangeText={text => setAddress(text)}
+              onChangeText={(text: string) => setAddress(text)}
               placeholder="Enter your current full address"
             />
             <InputComponent
               textLabel="Phone Number"
               imgSource={require('../assets/img/phone_number.png')}
-              // onChangeText={text => setPhone(text)}
+              onChangeText={(text: number) => setPhone(text)}
               placeholder="Enter your phone number"
             />
             <Button
@@ -163,7 +162,7 @@ const Register: FC<Props> = props => {
           </View>
         </View>
       </TouchableWithoutFeedback>
-      {/*{visible && <ModalComponent />}*/}
+      {visible && <ModalComponent />}
     </KeyboardAwareScrollView>
   );
 };

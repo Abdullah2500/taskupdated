@@ -1,4 +1,4 @@
-import React, {useState, FC} from 'react';
+import React, {useState, useEffect, FC} from 'react';
 import {
   View,
   Text,
@@ -6,52 +6,56 @@ import {
   TouchableWithoutFeedback,
   Keyboard,
   StyleSheet,
+  Alert,
 } from 'react-native';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import {KeyboardAwareScrollView} from 'react-native-keyboard-aware-scroll-view';
-import {calHeight, calWidth} from '../calDimens';
-import {colors, fonts} from '../constants';
-// import {loginApi} from '../services/services';
-// import {useDispatch, useSelector} from 'react-redux';
-// import {
-//   closeLoading,
-//   setUserDetails,
-//   startLoading,
-// } from '../redux/actions/actions';
+import {calHeight, calWidth} from '../utils/calDimens';
+import {colors, fonts} from '../utils/constants';
+import {loginApi} from '../services/services';
+import {useDispatch, useSelector} from 'react-redux';
+import {
+  closeLoading,
+  setUserDetails,
+  startLoading,
+} from '../redux/actions/actions';
 import Header from '../components/Header';
-// import ModalComponent from '../components/Modal';
+import ModalComponent from '../components/Modal';
 import Button from '../components/Button';
 import InputComponent from '../components/formComponents/Input';
 import InputPassComponent from '../components/formComponents/InputPass';
+import {RootState} from '../redux/reducers/indexReducer';
 
 interface Props {
   navigation: any;
 }
 
-let validate_field: () => boolean;
-// let onChangeText: (text: string) => void;
+// let validate_field: () => boolean;
 
 const Login: FC<Props> = props => {
   const [passVisible, setPassVisibile] = useState<boolean>(true);
   const [email, setEmail] = useState<string>('');
   const [password, setPassword] = useState<string>('');
 
-  // const dispatch = useDispatch();
-  // const visible = useSelector(state => state.loadingReducer);
+  const dispatch = useDispatch();
+  const visible = useSelector((state: RootState) => state.loadingReducer);
 
-  validate_field = () => {
+  const validate_field = () => {
     if (!email || !password) {
-      alert('Email and Password fields should not be empty');
+      Alert.alert('OOPS!', 'Fields should not be empty');
       return false;
     } else if (password.length < 6) {
-      alert('Password should be at least 6 characters long');
+      Alert.alert(
+        'Password too short!',
+        'Password should be at least 6 characters long',
+      );
       return false;
     } else {
       const reg = /^\w+([\.-]?\w+)*@\w+([\.-]?\w+)*(\.\w{2,3})+$/;
       if (reg.test(email) === true) {
         return true;
       } else {
-        alert('Email is not valid');
+        Alert.alert('OOPS!', 'Email is not valid');
         return false;
       }
     }
@@ -60,38 +64,38 @@ const Login: FC<Props> = props => {
   const loginBtnPressed = async () => {
     try {
       if (validate_field()) {
-        // dispatch(startLoading());
-        // const res = await loginApi({
-        //   email: email,
-        //   password: password,
-        // });
-        // dispatch(setUserDetails(res.data));
-        // if (res.code === 200) {
-        //   try {
-        //     await AsyncStorage.setItem('token', res.data.token);
-        //   } catch (e) {
-        //     console.log('Error: ', e);
-        //   }
-        props.navigation.push('HomePage');
-        // } else {
-        //   alert(res.message);
-        //   dispatch(closeLoading());
-        // }
+        dispatch(startLoading());
+        const res = await loginApi({
+          email: email,
+          password: password,
+        });
+        dispatch(setUserDetails(res.data));
+        if (res.code === 200) {
+          try {
+            await AsyncStorage.setItem('token', res.data.token);
+          } catch (e) {
+            console.log('Error: ', e);
+          }
+          props.navigation.push('HomeNav');
+        } else {
+          Alert.alert('OOPS!', res.message);
+          dispatch(closeLoading());
+        }
       }
     } catch (error) {
       console.log(error);
     }
   };
 
-  // const stopInitialLoading = () => {
-  //   if (visible) {
-  //     dispatch(closeLoading());
-  //   }
-  // };
+  const stopInitialLoading = () => {
+    if (visible) {
+      dispatch(closeLoading());
+    }
+  };
 
-  // useEffect(() => {
-  //   stopInitialLoading();
-  // }, []);
+  useEffect(() => {
+    stopInitialLoading();
+  }, []);
 
   return (
     <KeyboardAwareScrollView
@@ -110,13 +114,13 @@ const Login: FC<Props> = props => {
             <InputComponent
               textLabel="E-Mail"
               imgSource={require('../assets/img/mail.png')}
-              // onChangeText={(text: string) => setEmail(text)}
+              onChangeText={(text: string) => setEmail(text)}
               placeholder="Enter your e-mail here"
             />
             <InputPassComponent
               textLabel="Password"
               imgSource={require('../assets/img/password.png')}
-              // onChangeText={(text: string) => setPassword(text)}
+              onChangeText={(text: string) => setPassword(text)}
               placeholder="Enter your password here"
               secureTextEntry={passVisible}
               onPress={() => setPassVisibile(!passVisible)}
@@ -124,7 +128,7 @@ const Login: FC<Props> = props => {
             />
             <TouchableOpacity
               activeOpacity={0.7}
-              onPress={() => alert('Improve your memory!')}
+              onPress={() => Alert.alert('No!', 'Improve your memory')}
               style={styles.forgotPass}>
               <Text style={styles.forgotPassText}>Forgot Password?</Text>
             </TouchableOpacity>
@@ -146,7 +150,7 @@ const Login: FC<Props> = props => {
           </View>
         </View>
       </TouchableWithoutFeedback>
-      {/*{visible && <ModalComponent />}*/}
+      {visible && <ModalComponent />}
     </KeyboardAwareScrollView>
   );
 };
@@ -214,6 +218,3 @@ const styles = StyleSheet.create({
 });
 
 export default Login;
-function alert(arg0: string) {
-  throw new Error('Function not implemented.');
-}

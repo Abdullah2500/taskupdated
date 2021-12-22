@@ -1,7 +1,7 @@
 import React, {FC} from 'react';
 import {Text, StyleSheet, TouchableOpacity} from 'react-native';
-import {calHeight} from '../calDimens';
-import {fonts, colors} from '../constants';
+import {calHeight} from '../utils/calDimens';
+import {fonts, colors} from '../utils/constants';
 
 interface Props {
   activeOpacity: number;

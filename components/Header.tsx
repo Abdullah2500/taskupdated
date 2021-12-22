@@ -1,9 +1,14 @@
-import React from 'react';
+import React, {FC} from 'react';
 import {View, Image, Text, Pressable} from 'react-native';
-import {calHeight, calWidth} from '../calDimens';
-import {colors, fonts} from '../constants';
+import {calHeight, calWidth} from '../utils/calDimens';
+import {colors, fonts} from '../utils/constants';
 
-const Header = props => {
+interface Props {
+  title?: string;
+  navigation: any;
+}
+
+const Header: FC<Props> = props => {
   const {title} = props;
   return (
     <View
